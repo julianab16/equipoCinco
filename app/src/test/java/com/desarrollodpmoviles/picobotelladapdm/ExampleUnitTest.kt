@@ -1,4 +1,4 @@
-package com.desarrollodpmoviles.picobotella
+package com.desarrollodpmoviles.picobotelladapdm
 
 import org.junit.Test
 
