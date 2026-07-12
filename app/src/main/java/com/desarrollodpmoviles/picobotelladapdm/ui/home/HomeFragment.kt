@@ -34,6 +34,7 @@ class HomeFragment : Fragment() {
         val boton = view.findViewById<Button>(R.id.btnPresioname)
         val btnAudio = view.findViewById<ImageButton>(R.id.btnAudio)
         val btnInstrucciones = view.findViewById<ImageButton>(R.id.btnInstrucciones)
+        val btnRetos = view.findViewById<ImageButton>(R.id.btnRetos)
 
         // El contador inicia mostrando el 3
         contador.text = "3"
@@ -53,6 +54,10 @@ class HomeFragment : Fragment() {
 
         btnInstrucciones.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_instruccionesFragment)
+        }
+
+        btnRetos.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_crearRetosFragment)
         }
 
         mediaPlayer = MediaPlayer.create(requireContext(), R.raw.musica_fondo)
