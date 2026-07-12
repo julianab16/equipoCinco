@@ -30,7 +30,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_star"
-            android:tint="#FF9800"/>
+            app:tint="#FF9800" />
 
         <ImageButton
             android:id="@+id/btnAudio"
@@ -39,7 +39,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_volume_on"
-            android:tint="#FF9800"/>
+            app:tint="#FF9800" />
 
         <ImageButton
             android:id="@+id/btnInstrucciones"
@@ -48,7 +48,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_menu_book"
-            android:tint="#FF9800"/>
+            app:tint="#FF9800" />
 
         <ImageButton
             android:id="@+id/btnRetos"
@@ -57,7 +57,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_add"
-            android:tint="#FF9800"/>
+            app:tint="#FF9800" />
 
         <ImageButton
             android:id="@+id/btnCompartir"
@@ -66,7 +66,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_share"
-            android:tint="#FF9800"/>
+            app:tint="#FF9800" />
 
     </LinearLayout>
     <!-- Botella -->
