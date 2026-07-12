@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.desarrollodpmoviles.picobotelladapdm.R
 
 class InstruccionesFragment : Fragment() {
@@ -28,6 +30,10 @@ class InstruccionesFragment : Fragment() {
             requireContext(),
             R.anim.rebote
         )
+
+        val btnVolver = view.findViewById<ImageButton>(R.id.btnVolver)
+
+        btnVolver.setOnClickListener { findNavController().navigate(R.id.action_instruccionesFragment_to_homeFragment) }
 
         trofeo.startAnimation(animacion)
     }

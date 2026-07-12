@@ -19,7 +19,10 @@
 
         <action
             android:id="@+id/action_homeFragment_to_instruccionesFragment"
-            app:destination="@id/instruccionesFragment"/>
+            app:destination="@id/instruccionesFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_crearRetosFragment"
+            app:destination="@id/crearRetosFragment" />
 
     </fragment>
 
@@ -27,12 +30,25 @@
         android:id="@+id/instruccionesFragment"
         android:name="com.desarrollodpmoviles.picobotelladapdm.ui.instrucciones.InstruccionesFragment"
         android:label="fragment_instrucciones"
-        tools:layout="@layout/fragment_instrucciones" />
+        tools:layout="@layout/fragment_instrucciones" >
+        <action
+            android:id="@+id/action_instruccionesFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/juegoFragment"
         android:name="com.desarrollodpmoviles.picobotelladapdm.ui.juego.JuegoFragment"
         android:label="fragment_juego"
         tools:layout="@layout/fragment_juego" />
+    <fragment
+        android:id="@+id/crearRetosFragment"
+        android:name="com.desarrollodpmoviles.picobotelladapdm.ui.retos.CrearRetosFragment"
+        android:label="fragment_crear_retos"
+        tools:layout="@layout/fragment_crear_retos" >
+        <action
+            android:id="@+id/action_crearRetosFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/splashFragment"
         android:name="com.desarrollodpmoviles.picobotelladapdm.ui.splash.SplashFragment"
