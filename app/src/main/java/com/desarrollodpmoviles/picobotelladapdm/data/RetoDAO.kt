@@ -12,8 +12,8 @@ interface RetoDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveReto(reto: Reto)
 
-    @Query("SELECT * FROM Reto")
-    suspend fun getListReto(): MutableList<Reto>
+    @Query("SELECT * FROM reto ORDER BY id DESC")
+    fun getListReto(): MutableList<Reto>
 
     @Delete
     suspend fun deleteReto(reto: Reto)
