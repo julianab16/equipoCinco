@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 import com.desarrollodpmoviles.picobotelladapdm.model.Reto
 import com.desarrollodpmoviles.picobotelladapdm.utils.Constants.NAME_BD
 
-@Database(entities = [Reto::class], version = 1)
+@Database(entities = [Reto::class], version = 1, exportSchema = false)
 abstract class RetoDB : RoomDatabase() {
     abstract fun retoDao(): RetoDAO
     companion object{
