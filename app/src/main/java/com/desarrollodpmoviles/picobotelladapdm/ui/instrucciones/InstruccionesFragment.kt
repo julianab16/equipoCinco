@@ -8,6 +8,8 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.desarrollodpmoviles.picobotelladapdm.R
+import android.widget.ImageButton
+import androidx.navigation.fragment.findNavController
 
 class InstruccionesFragment : Fragment() {
 
@@ -30,5 +32,9 @@ class InstruccionesFragment : Fragment() {
         )
 
         trofeo.startAnimation(animacion)
+
+        view.findViewById<ImageButton>(R.id.btnVolver).setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 }

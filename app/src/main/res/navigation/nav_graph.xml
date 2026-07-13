@@ -21,6 +21,10 @@
             android:id="@+id/action_homeFragment_to_instruccionesFragment"
             app:destination="@id/instruccionesFragment"/>
 
+        <action
+            android:id="@+id/action_homeFragment_to_retosFragment"
+            app:destination="@id/retosFragment"/>
+
     </fragment>
 
     <fragment
@@ -28,6 +32,13 @@
         android:name="com.desarrollodpmoviles.picobotelladapdm.ui.instrucciones.InstruccionesFragment"
         android:label="fragment_instrucciones"
         tools:layout="@layout/fragment_instrucciones" />
+
+    <fragment
+        android:id="@+id/retosFragment"
+        android:name="com.desarrollodpmoviles.picobotelladapdm.ui.retos.RetosFragment"
+        android:label="fragment_retos"
+        tools:layout="@layout/fragment_retos" />
+
     <fragment
         android:id="@+id/juegoFragment"
         android:name="com.desarrollodpmoviles.picobotelladapdm.ui.juego.JuegoFragment"
@@ -44,4 +55,6 @@
             app:destination="@id/homeFragment"/>
 
     </fragment>
+
+
 </navigation>
