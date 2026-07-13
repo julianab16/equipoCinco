@@ -1,30 +1,48 @@
 package com.desarrollodpmoviles.picobotelladapdm.ui.viewholder
-import android.os.Bundle
-import androidx.navigation.NavController
+
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.desarrollodpmoviles.picobotelladapdm.databinding.ItemRetoBinding
-//import com.example.clase8.R
 import com.desarrollodpmoviles.picobotelladapdm.model.Reto
 
 class RetoViewHolder(
-    binding: ItemRetoBinding
+    private val binding: ItemRetoBinding
 ) : RecyclerView.ViewHolder(binding.root) {
-
-    val bindingItem = binding
 
     fun setItemReto(
         reto: Reto,
-//        onEdit: (Reto) -> Unit,
-//        onDelete: (Reto) -> Unit
+        onEditar: (Reto) -> Unit,
+        onEliminar: (Reto) -> Unit
     ) {
-        bindingItem.txtReto.text = reto.descripcion
 
-//        bindingItem.btnEditar.setOnClickListener {
-//            onEdit(reto)
-//        }
-//
-//        bindingItem.btnEliminar.setOnClickListener {
-//            onDelete(reto)
-//        }
+        binding.txtReto.text = reto.descripcion
+
+        binding.btnEditar.setOnClickListener {
+            animarBoton(it) {
+                onEditar(reto)
+            }
+        }
+
+        binding.btnEliminar.setOnClickListener {
+            animarBoton(it) {
+                onEliminar(reto)
+            }
+        }
+    }
+
+    private fun animarBoton(view: View, accion: () -> Unit) {
+        view.animate()
+            .scaleX(0.9f)
+            .scaleY(0.9f)
+            .setDuration(80)
+            .withEndAction {
+                view.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(80)
+                    .withEndAction {
+                        accion()
+                    }
+            }
     }
 }

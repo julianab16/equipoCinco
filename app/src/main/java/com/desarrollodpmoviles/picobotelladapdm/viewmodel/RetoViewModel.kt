@@ -58,7 +58,7 @@ class RetoViewModel (application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun updateReto(reto: Reto) {
+    fun updateReto(reto: Reto){
         viewModelScope.launch {
             _progresState.value = true
             try {

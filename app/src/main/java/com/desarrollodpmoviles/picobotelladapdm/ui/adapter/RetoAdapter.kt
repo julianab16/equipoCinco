@@ -7,19 +7,29 @@ import com.desarrollodpmoviles.picobotelladapdm.databinding.ItemRetoBinding
 import com.desarrollodpmoviles.picobotelladapdm.model.Reto
 import com.desarrollodpmoviles.picobotelladapdm.ui.viewholder.RetoViewHolder
 
-class RetoAdapter (private val listReto:MutableList<Reto>):RecyclerView.Adapter<RetoViewHolder>() {
+class RetoAdapter(
+    private val listReto: MutableList<Reto>,
+    private val onEditar: (Reto) -> Unit,
+    private val onEliminar: (Reto) -> Unit
+) : RecyclerView.Adapter<RetoViewHolder>() {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RetoViewHolder {
-        val binding = ItemRetoBinding.inflate(LayoutInflater.from(parent.context),parent, false)
+        val binding = ItemRetoBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
         return RetoViewHolder(binding)
     }
 
-    override fun getItemCount(): Int {
-        return listReto.size
-    }
+    override fun getItemCount() = listReto.size
 
     override fun onBindViewHolder(holder: RetoViewHolder, position: Int) {
-        val reto = listReto[position]
-        holder.setItemReto(reto)
+        holder.setItemReto(
+            listReto[position],
+            onEditar,
+            onEliminar
+        )
     }
 
     fun actualizarLista(nuevaLista: MutableList<Reto>) {
@@ -27,5 +37,4 @@ class RetoAdapter (private val listReto:MutableList<Reto>):RecyclerView.Adapter<
         listReto.addAll(nuevaLista)
         notifyDataSetChanged()
     }
-
 }

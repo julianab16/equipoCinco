@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.desarrollodpmoviles.picobotelladapdm.R
 import com.desarrollodpmoviles.picobotelladapdm.databinding.FragmentRetosBinding
 import com.desarrollodpmoviles.picobotelladapdm.dialogos.DialogoAgregarReto
+import com.desarrollodpmoviles.picobotelladapdm.dialogos.DialogoEditarReto
+import com.desarrollodpmoviles.picobotelladapdm.dialogos.DialogoEliminarReto
 import com.desarrollodpmoviles.picobotelladapdm.viewmodel.RetoViewModel
 import com.desarrollodpmoviles.picobotelladapdm.ui.adapter.RetoAdapter
 
@@ -59,15 +61,41 @@ class RetosFragment : Fragment() {
         }
     }
 
-    private fun configurarRecycler() {
+private fun configurarRecycler() {
 
-        adapter = RetoAdapter(mutableListOf())
+    adapter = RetoAdapter(
 
-        binding.rvRetos.layoutManager = LinearLayoutManager(requireContext())
+        mutableListOf(),
 
-        binding.rvRetos.adapter = adapter
-    }
+        onEditar = { reto ->
 
+            DialogoEditarReto.show(
+                requireContext(),
+                reto,
+                retoViewModel
+            ) {
+                retoViewModel.getListReto()
+            }
+
+        },
+
+        onEliminar = { reto ->
+
+            DialogoEliminarReto.show(
+                requireContext(),
+                reto,
+                retoViewModel
+            ) {
+                retoViewModel.getListReto()
+            }
+
+        }
+
+    )
+
+    binding.rvRetos.layoutManager = LinearLayoutManager(requireContext())
+    binding.rvRetos.adapter = adapter
+}
     private fun observarDatos() {
 
         retoViewModel.listReto.observe(viewLifecycleOwner) { lista ->
