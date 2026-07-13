@@ -13,6 +13,8 @@ import com.desarrollodpmoviles.picobotelladapdm.R
 import android.media.MediaPlayer
 import android.widget.ImageButton
 import androidx.navigation.fragment.findNavController
+import android.content.Intent
+import android.net.Uri
 
 class HomeFragment : Fragment() {
 
@@ -31,6 +33,8 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val contador = view.findViewById<TextView>(R.id.txtContador)
+        val btnCompartir = view.findViewById<ImageButton>(R.id.btnCompartir)
+        val btnCalificar = view.findViewById<ImageButton>(R.id.btnCalificar)
         val boton = view.findViewById<Button>(R.id.btnPresioname)
         val btnAudio = view.findViewById<ImageButton>(R.id.btnAudio)
         val btnInstrucciones = view.findViewById<ImageButton>(R.id.btnInstrucciones)
@@ -79,6 +83,14 @@ class HomeFragment : Fragment() {
 
             audioEncendido = !audioEncendido
         }
+
+        btnCalificar.setOnClickListener {
+            abrirGooglePlay()
+        }
+
+        btnCompartir.setOnClickListener {
+            compartirAplicacion()
+        }
     }
 
     private fun iniciarContador(contador: TextView) {
@@ -97,6 +109,38 @@ class HomeFragment : Fragment() {
 
         }.start()
     }
+
+    private fun abrirGooglePlay() {
+
+        val intent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("https://play.google.com/store/apps/details?id=com.nequi.MobileApp")
+        )
+
+        startActivity(intent)
+    }
+
+    private fun compartirAplicacion() {
+
+        val mensaje = """
+        ¡Estoy jugando Pico Botella!
+        
+        Pon a prueba a tus amigos con los mejores retos.
+        
+        Descárgala aquí:
+        https://play.google.com/store/apps/details?id=com.nequi.MobileApp
+    """.trimIndent()
+
+        val intent = Intent(Intent.ACTION_SEND).apply {
+
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, mensaje)
+
+        }
+
+        startActivity(Intent.createChooser(intent, "Compartir con"))
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
 

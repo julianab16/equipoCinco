@@ -24,12 +24,12 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageButton
-            android:id="@+id/btnStar"
+            android:id="@+id/btnCalificar"
             android:layout_width="0dp"
             android:layout_height="42dp"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_star"
+            android:src="@drawable/baseline_star_border_24"
             app:tint="#FF9800" />
 
         <ImageButton
