@@ -18,6 +18,7 @@ import com.desarrollodpmoviles.picobotelladapdm.R
 import kotlin.random.Random
 import android.content.Intent
 import android.net.Uri
+import com.desarrollodpmoviles.picobotelladapdm.utils.animarClickYLuego
 
 class HomeFragment : Fragment() {
     private var mediaPlayerFondo: MediaPlayer? = null
@@ -56,10 +57,14 @@ class HomeFragment : Fragment() {
         boton.startAnimation(animacionParpadeo)
 
         btnRetos.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_retosFragment)
+            it.animarClickYLuego {
+                findNavController().navigate(R.id.action_homeFragment_to_retosFragment)
+            }
         }
         btnInstrucciones.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_instruccionesFragment)
+            it.animarClickYLuego {
+                findNavController().navigate(R.id.action_homeFragment_to_instruccionesFragment)
+            }
         }
 
         mediaPlayerFondo = MediaPlayer.create(requireContext(), R.raw.musica_fondo)
@@ -67,14 +72,16 @@ class HomeFragment : Fragment() {
         mediaPlayerFondo?.start()
 
         btnAudio.setOnClickListener {
-            if (audioEncendido) {
-                mediaPlayerFondo?.pause()
-                btnAudio.setImageResource(R.drawable.ic_volume_off)
-            } else {
-                mediaPlayerFondo?.start()
-                btnAudio.setImageResource(R.drawable.ic_volume_on)
+            it.animarClickYLuego {
+                if (audioEncendido) {
+                    mediaPlayerFondo?.pause()
+                    btnAudio.setImageResource(R.drawable.ic_volume_off)
+                } else {
+                    mediaPlayerFondo?.start()
+                    btnAudio.setImageResource(R.drawable.ic_volume_on)
+                }
+                audioEncendido = !audioEncendido
             }
-            audioEncendido = !audioEncendido
         }
 
         mediaPlayerGiro = MediaPlayer.create(requireContext(), R.raw.bottle_rolling).apply {
@@ -96,11 +103,15 @@ class HomeFragment : Fragment() {
         }
 
         btnCalificar.setOnClickListener {
-            abrirGooglePlay()
+            it.animarClickYLuego {
+                abrirGooglePlay()
+            }
         }
 
         btnCompartir.setOnClickListener {
-            compartirAplicacion()
+            it.animarClickYLuego {
+                compartirAplicacion()
+            }
         }
     }
 
