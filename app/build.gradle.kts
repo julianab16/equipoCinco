@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.desarrollodpmoviles.picobotelladapdm"
-    compileSdk = 36
+    compileSdk = 34
 
     buildFeatures {
         viewBinding = true
@@ -16,7 +16,7 @@ android {
     defaultConfig {
         applicationId = "com.desarrollodpmoviles.picobotelladapdm"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 

@@ -1,5 +1,6 @@
 package com.desarrollodpmoviles.picobotelladapdm.ui.home
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -7,17 +8,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Button
-import android.widget.TextView
-import androidx.fragment.app.Fragment
-import com.desarrollodpmoviles.picobotelladapdm.R
-import android.media.MediaPlayer
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.core.animation.doOnEnd
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.desarrollodpmoviles.picobotelladapdm.R
+import kotlin.random.Random
 
 class HomeFragment : Fragment() {
-
-    private var mediaPlayer: MediaPlayer? = null
+    private var mediaPlayerFondo: MediaPlayer? = null
     private var audioEncendido = true
+
+    private lateinit var imgBotella: ImageView
+    private var mediaPlayerGiro: MediaPlayer? = null
+    private var animatorGiro: android.animation.ObjectAnimator? = null
+    private var rotacionActual = 0f
+    private var isGirando = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,56 +43,91 @@ class HomeFragment : Fragment() {
         val btnAudio = view.findViewById<ImageButton>(R.id.btnAudio)
         val btnInstrucciones = view.findViewById<ImageButton>(R.id.btnInstrucciones)
         val btnRetos = view.findViewById<ImageButton>(R.id.btnRetos)
+
+        imgBotella = view.findViewById(R.id.imgBotella)
+
+        contador.text = "3"
+
+        val animacionParpadeo = AnimationUtils.loadAnimation(requireContext(), R.anim.parpadeo)
+        boton.startAnimation(animacionParpadeo)
+
         btnRetos.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_retosFragment)
         }
-
-        // El contador inicia mostrando el 3
-        contador.text = "3"
-
-        // Animación de parpadeo del botón
-        val animacionParpadeo = AnimationUtils.loadAnimation(
-            requireContext(),
-            R.anim.parpadeo
-        )
-
-        boton.startAnimation(animacionParpadeo)
-
-        // Al presionar el botón inicia el contador
-        boton.setOnClickListener {
-            iniciarContador(contador)
-        }
-
         btnInstrucciones.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_instruccionesFragment)
         }
 
-        mediaPlayer = MediaPlayer.create(requireContext(), R.raw.musica_fondo)
-        mediaPlayer?.isLooping = true
-        mediaPlayer?.start()
+        mediaPlayerFondo = MediaPlayer.create(requireContext(), R.raw.musica_fondo)
+        mediaPlayerFondo?.isLooping = true
+        mediaPlayerFondo?.start()
 
         btnAudio.setOnClickListener {
-
             if (audioEncendido) {
-
-                mediaPlayer?.pause()
+                mediaPlayerFondo?.pause()
                 btnAudio.setImageResource(R.drawable.ic_volume_off)
-
             } else {
-
-                mediaPlayer?.start()
+                mediaPlayerFondo?.start()
                 btnAudio.setImageResource(R.drawable.ic_volume_on)
-
             }
-
             audioEncendido = !audioEncendido
+        }
+
+        mediaPlayerGiro = MediaPlayer.create(requireContext(), R.raw.bottle_rolling).apply {
+            isLooping = true   // Suena en bucle mientras gira
+            setVolume(1.0f, 1.0f)   // Izquierda y derecha al máximo (1.0)
+
+        }
+
+        boton.setOnClickListener {
+            if (isGirando) return@setOnClickListener
+            boton.clearAnimation()  // Detener la animación de parpadeo
+            boton.visibility = View.INVISIBLE
+            boton.isEnabled = false
+
+            contador.visibility = View.VISIBLE
+
+            // Iniciar el giro con el contador
+            iniciarGiroYContador(contador, boton, animacionParpadeo)
         }
     }
 
-    private fun iniciarContador(contador: TextView) {
 
-        object : CountDownTimer(4000, 1000) {
 
+    private fun iniciarGiroYContador(contador: TextView, boton: Button, animacionParpadeo: android.view.animation.Animation) {
+
+        mediaPlayerFondo?.stop()
+
+        isGirando = true
+
+        val vueltasMinimas = 1080
+        val offsetAleatorio = Random.nextInt(0, 360)
+        val anguloFinal = rotacionActual + vueltasMinimas + offsetAleatorio
+
+        val duracionMs = 4000L
+
+        mediaPlayerGiro?.apply {
+            if (!isPlaying) {
+                seekTo(0)
+                start()
+            }
+        }
+
+        animatorGiro = android.animation.ObjectAnimator.ofFloat(
+            imgBotella,
+            "rotation",
+            rotacionActual,
+            anguloFinal
+        ).apply {
+            duration = duracionMs
+            interpolator = android.view.animation.AccelerateDecelerateInterpolator()
+            doOnEnd {
+                detenerGiro()
+            }
+            start()
+        }
+
+        object : CountDownTimer(duracionMs, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 contador.text = (millisUntilFinished / 1000).toString()
             }
@@ -92,17 +135,53 @@ class HomeFragment : Fragment() {
             override fun onFinish() {
                 contador.text = "0"
 
-                // Aquí más adelante iniciaremos el juego
-            }
+                detenerGiro()
 
+                boton.visibility = View.VISIBLE
+                boton.isEnabled = true
+                boton.startAnimation(animacionParpadeo)  // si tienes la animación en una variable
+
+
+                // Aquí puedes agregar la lógica de "a qué apuntó la botella" si quieres
+                // Por ahora solo se detiene.
+            }
         }.start()
     }
+
+    private fun detenerGiro() {
+        // Detener la animación
+        animatorGiro?.cancel()
+        animatorGiro = null
+
+        // Detener el sonido del giro (Criterio 2)
+        mediaPlayerGiro?.apply {
+            if (isPlaying) {
+                pause()
+                seekTo(0)   // Rebobinar para la próxima vez
+            }
+        }
+
+        val rotacionActualFinal = imgBotella.rotation
+        rotacionActual = rotacionActualFinal
+
+        isGirando = false
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
 
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        mediaPlayer = null
-    }
+        // Liberar música de fondo
+        mediaPlayerFondo?.stop()
+        mediaPlayerFondo?.release()
+        mediaPlayerFondo = null
 
+        // Liberar sonido de giro
+        mediaPlayerGiro?.stop()
+        mediaPlayerGiro?.release()
+        mediaPlayerGiro = null
+
+        // Cancelar animación
+        animatorGiro?.cancel()
+        animatorGiro = null
+    }
 }
