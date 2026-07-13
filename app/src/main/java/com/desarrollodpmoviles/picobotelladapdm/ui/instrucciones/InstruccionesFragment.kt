@@ -33,8 +33,10 @@ class InstruccionesFragment : Fragment() {
 
         val btnVolver = view.findViewById<ImageButton>(R.id.btnVolver)
 
-        btnVolver.setOnClickListener { findNavController().navigate(R.id.action_instruccionesFragment_to_homeFragment) }
-
         trofeo.startAnimation(animacion)
+
+        view.findViewById<ImageButton>(R.id.btnVolver).setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 }
