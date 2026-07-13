@@ -123,11 +123,8 @@ class HomeFragment : Fragment() {
     private fun compartirAplicacion() {
 
         val mensaje = """
-        ¡Estoy jugando Pico Botella!
-        
-        Pon a prueba a tus amigos con los mejores retos.
-        
-        Descárgala aquí:
+        App PicoBotella.
+        Solo los valientes lo juegan!!
         https://play.google.com/store/apps/details?id=com.nequi.MobileApp
     """.trimIndent()
 
