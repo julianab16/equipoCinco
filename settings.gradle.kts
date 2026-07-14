@@ -22,5 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "PicoBotella"
+rootProject.name = "PicoBotellaDAPDM"
 include(":app")
+ 
