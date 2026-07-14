@@ -2,6 +2,8 @@ package com.desarrollodpmoviles.picobotelladapdm.ui.home
 
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +26,9 @@ import kotlin.random.Random
 import android.content.Intent
 import android.net.Uri
 import com.desarrollodpmoviles.picobotelladapdm.utils.animarClickYLuego
+import android.view.animation.Animation
+import android.animation.ObjectAnimator
+import android.view.animation.AccelerateDecelerateInterpolator
 
 class HomeFragment : Fragment() {
     private var mediaPlayerFondo: MediaPlayer? = null
@@ -34,7 +39,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var imgBotella: ImageView
     private var mediaPlayerGiro: MediaPlayer? = null
-    private var animatorGiro: android.animation.ObjectAnimator? = null
+    private var animatorGiro: ObjectAnimator? = null
     private var rotacionActual = 0f
     private var isGirando = false
 
@@ -105,9 +110,8 @@ class HomeFragment : Fragment() {
             boton.clearAnimation()
             boton.visibility = View.INVISIBLE
             boton.isEnabled = false
-            contador.visibility = View.VISIBLE
 
-            iniciarGiroYContador(contador, boton, animacionParpadeo)
+            iniciarGiro(contador, boton, animacionParpadeo)
         }
 
         btnCalificar.setOnClickListener {
@@ -125,7 +129,7 @@ class HomeFragment : Fragment() {
 
     private fun mostrarDialogoRetoAleatorio(
         boton: Button,
-        animacionParpadeo: android.view.animation.Animation,
+        animacionParpadeo: Animation,
         contador: TextView,
         onDialogClosed: () -> Unit
     ) {
@@ -164,17 +168,18 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun restaurarUI(boton: Button, animacionParpadeo: android.view.animation.Animation) {
+    private fun restaurarUI(boton: Button, animacionParpadeo: Animation) {
         boton.visibility = View.VISIBLE
         boton.isEnabled = true
         boton.startAnimation(animacionParpadeo)
     }
 
-    private fun iniciarGiroYContador(
+    private fun iniciarGiro(
         contador: TextView,
         boton: Button,
-        animacionParpadeo: android.view.animation.Animation
+        animacionParpadeo: Animation
     ) {
+        // Pausar música de fondo
         if (mediaPlayerFondo?.isPlaying == true) {
             mediaPlayerFondo?.pause()
             musicaPausadaPorJuego = true
@@ -182,11 +187,13 @@ class HomeFragment : Fragment() {
 
         isGirando = true
 
+        // Calcular ángulo aleatorio
         val vueltasMinimas = 1080
         val offsetAleatorio = Random.nextInt(0, 360)
         val anguloFinal = rotacionActual + vueltasMinimas + offsetAleatorio
-        val duracionMs = 4000L
+        val duracionGiroMs = 4000L
 
+        // Iniciar sonido de giro
         mediaPlayerGiro?.apply {
             if (!isPlaying) {
                 seekTo(0)
@@ -194,51 +201,55 @@ class HomeFragment : Fragment() {
             }
         }
 
-        animatorGiro = android.animation.ObjectAnimator.ofFloat(
+        // Animación de giro
+        animatorGiro = ObjectAnimator.ofFloat(
             imgBotella,
             "rotation",
             rotacionActual,
             anguloFinal
         ).apply {
-            duration = duracionMs
-            interpolator = android.view.animation.AccelerateDecelerateInterpolator()
+            duration = duracionGiroMs
+            interpolator = AccelerateDecelerateInterpolator()
             doOnEnd {
+                rotacionActual = anguloFinal
                 detenerGiro()
+                iniciarCuentaRegresiva(contador, boton, animacionParpadeo)
             }
             start()
         }
+    }
 
-        // Contador regresivo
-        object : CountDownTimer(duracionMs, 1000) {
+    private fun detenerGiro() {
+        isGirando = false
+        mediaPlayerGiro?.apply {
+            if (isPlaying) {
+                pause()
+            }
+        }
+    }
+
+    private fun iniciarCuentaRegresiva(
+        contador: TextView,
+        boton: Button,
+        animacionParpadeo: Animation
+    ) {
+        // Mostrar el contador en el centro de la botella (debe estar superpuesto)
+        contador.visibility = View.VISIBLE
+        contador.text = "3"  // Valor inicial
+
+        val duracionCuentaMs = 4000L
+
+        object : CountDownTimer(duracionCuentaMs, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 contador.text = (millisUntilFinished / 1000).toString()
             }
 
             override fun onFinish() {
                 contador.text = "0"
-                detenerGiro()
                 mostrarDialogoRetoAleatorio(boton, animacionParpadeo, contador) {
-                    // Acciones adicionales al cerrar el diálogo
                 }
             }
         }.start()
-    }
-
-    private fun detenerGiro() {
-        // Detener la animación
-        animatorGiro?.cancel()
-        animatorGiro = null
-
-        // Detener el sonido del giro (Criterio 2)
-        mediaPlayerGiro?.apply {
-            if (isPlaying) {
-                pause()
-                seekTo(0)
-            }
-        }
-
-        rotacionActual = imgBotella.rotation
-        isGirando = false
     }
 
     private fun abrirGooglePlay() {
