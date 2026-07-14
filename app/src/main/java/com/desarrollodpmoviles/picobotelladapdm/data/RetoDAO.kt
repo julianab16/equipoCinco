@@ -19,4 +19,7 @@ interface RetoDAO {
     suspend fun deleteReto(reto: Reto)
     @Update
     suspend fun updateReto(reto: Reto)
+
+    @Query("SELECT * FROM reto ORDER BY RANDOM() LIMIT 1")
+    suspend fun obtenerRetoAleatorio(): Reto?
 }

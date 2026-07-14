@@ -36,4 +36,8 @@ class RetoRepository(val context: Context){
             retoDAO.updateReto(reto)
         }
     }
+
+    suspend fun getRandomReto(): Reto? {
+        return retoDAO.obtenerRetoAleatorio()
+    }
 }

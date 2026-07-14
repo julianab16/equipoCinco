@@ -1,23 +1,47 @@
 package com.desarrollodpmoviles.picobotelladapdm.ui.home
 
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Button
-import android.widget.TextView
-import androidx.fragment.app.Fragment
-import com.desarrollodpmoviles.picobotelladapdm.R
-import android.media.MediaPlayer
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.core.animation.doOnEnd
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.desarrollodpmoviles.picobotelladapdm.R
+import com.desarrollodpmoviles.picobotelladapdm.dialogos.DialogoRetoAleatorio
+import com.desarrollodpmoviles.picobotelladapdm.viewmodel.RetoViewModel
+import kotlinx.coroutines.launch
+import kotlin.random.Random
+import android.content.Intent
+import android.net.Uri
+import com.desarrollodpmoviles.picobotelladapdm.utils.animarClickYLuego
+import android.view.animation.Animation
+import android.animation.ObjectAnimator
+import android.view.animation.AccelerateDecelerateInterpolator
 
 class HomeFragment : Fragment() {
-
-    private var mediaPlayer: MediaPlayer? = null
+    private var mediaPlayerFondo: MediaPlayer? = null
     private var audioEncendido = true
+    private var musicaPausadaPorJuego = false
+
+    private lateinit var retoViewModel: RetoViewModel
+
+    private lateinit var imgBotella: ImageView
+    private var mediaPlayerGiro: MediaPlayer? = null
+    private var animatorGiro: ObjectAnimator? = null
+    private var rotacionActual = 0f
+    private var isGirando = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,78 +55,237 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val contador = view.findViewById<TextView>(R.id.txtContador)
+        val btnCompartir = view.findViewById<ImageButton>(R.id.btnCompartir)
+        val btnCalificar = view.findViewById<ImageButton>(R.id.btnCalificar)
         val boton = view.findViewById<Button>(R.id.btnPresioname)
         val btnAudio = view.findViewById<ImageButton>(R.id.btnAudio)
         val btnInstrucciones = view.findViewById<ImageButton>(R.id.btnInstrucciones)
         val btnRetos = view.findViewById<ImageButton>(R.id.btnRetos)
-        btnRetos.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_retosFragment)
-        }
 
-        // El contador inicia mostrando el 3
+        retoViewModel = ViewModelProvider(this).get(RetoViewModel::class.java)
+
+        imgBotella = view.findViewById(R.id.imgBotella)
+
         contador.text = "3"
 
-        // Animación de parpadeo del botón
-        val animacionParpadeo = AnimationUtils.loadAnimation(
-            requireContext(),
-            R.anim.parpadeo
-        )
-
+        val animacionParpadeo = AnimationUtils.loadAnimation(requireContext(), R.anim.parpadeo)
         boton.startAnimation(animacionParpadeo)
 
-        // Al presionar el botón inicia el contador
-        boton.setOnClickListener {
-            iniciarContador(contador)
+        btnRetos.setOnClickListener {
+            it.animarClickYLuego {
+                findNavController().navigate(R.id.action_homeFragment_to_retosFragment)
+            }
         }
-
         btnInstrucciones.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_instruccionesFragment)
+            it.animarClickYLuego {
+                findNavController().navigate(R.id.action_homeFragment_to_instruccionesFragment)
+            }
         }
 
-        mediaPlayer = MediaPlayer.create(requireContext(), R.raw.musica_fondo)
-        mediaPlayer?.isLooping = true
-        mediaPlayer?.start()
+        mediaPlayerFondo = MediaPlayer.create(requireContext(), R.raw.musica_fondo)
+        mediaPlayerFondo?.isLooping = true
+        mediaPlayerFondo?.start()
 
         btnAudio.setOnClickListener {
-
-            if (audioEncendido) {
-
-                mediaPlayer?.pause()
-                btnAudio.setImageResource(R.drawable.ic_volume_off)
-
-            } else {
-
-                mediaPlayer?.start()
-                btnAudio.setImageResource(R.drawable.ic_volume_on)
-
+            it.animarClickYLuego {
+                if (audioEncendido) {
+                    mediaPlayerFondo?.pause()
+                    btnAudio.setImageResource(R.drawable.ic_volume_off)
+                } else {
+                    mediaPlayerFondo?.start()
+                    btnAudio.setImageResource(R.drawable.ic_volume_on)
+                }
+                audioEncendido = !audioEncendido
             }
+        }
 
-            audioEncendido = !audioEncendido
+        mediaPlayerGiro = MediaPlayer.create(requireContext(), R.raw.bottle_rolling).apply {
+            isLooping = true
+            setVolume(1.0f, 1.0f)
+        }
+
+        boton.setOnClickListener {
+            if (isGirando) return@setOnClickListener
+
+            boton.clearAnimation()
+            boton.visibility = View.INVISIBLE
+            boton.isEnabled = false
+
+            iniciarGiro(contador, boton, animacionParpadeo)
+        }
+
+        btnCalificar.setOnClickListener {
+            it.animarClickYLuego {
+                abrirGooglePlay()
+            }
+        }
+
+        btnCompartir.setOnClickListener {
+            it.animarClickYLuego {
+                compartirAplicacion()
+            }
         }
     }
 
-    private fun iniciarContador(contador: TextView) {
+    private fun mostrarDialogoRetoAleatorio(
+        boton: Button,
+        animacionParpadeo: Animation,
+        contador: TextView,
+        onDialogClosed: () -> Unit
+    ) {
+        contador.visibility = View.INVISIBLE
 
-        object : CountDownTimer(4000, 1000) {
+        // Asegurar que el fragmento está activo
+        if (!isAdded) {
+            restaurarUI(boton, animacionParpadeo)
+            return
+        }
 
+        lifecycleScope.launch {
+            try {
+                val retoDescripcion = retoViewModel.obtenerRetoAleatorio() ?: "¡Completa un reto!"
+
+                DialogoRetoAleatorio.show(
+                    requireContext(),
+                    retoDescripcion,
+                    onClose = {
+                        if (musicaPausadaPorJuego && audioEncendido) {
+                            mediaPlayerFondo?.start()
+                            musicaPausadaPorJuego = false
+                        }
+                        restaurarUI(boton, animacionParpadeo)
+                        onDialogClosed.invoke()
+                    }
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                if (musicaPausadaPorJuego && audioEncendido) {
+                    mediaPlayerFondo?.start()
+                    musicaPausadaPorJuego = false
+                }
+                restaurarUI(boton, animacionParpadeo)
+            }
+        }
+    }
+
+    private fun restaurarUI(boton: Button, animacionParpadeo: Animation) {
+        boton.visibility = View.VISIBLE
+        boton.isEnabled = true
+        boton.startAnimation(animacionParpadeo)
+    }
+
+    private fun iniciarGiro(
+        contador: TextView,
+        boton: Button,
+        animacionParpadeo: Animation
+    ) {
+        // Pausar música de fondo
+        if (mediaPlayerFondo?.isPlaying == true) {
+            mediaPlayerFondo?.pause()
+            musicaPausadaPorJuego = true
+        }
+
+        isGirando = true
+
+        // Calcular ángulo aleatorio
+        val vueltasMinimas = 1080
+        val offsetAleatorio = Random.nextInt(0, 360)
+        val anguloFinal = rotacionActual + vueltasMinimas + offsetAleatorio
+        val duracionGiroMs = 4000L
+
+        // Iniciar sonido de giro
+        mediaPlayerGiro?.apply {
+            if (!isPlaying) {
+                seekTo(0)
+                start()
+            }
+        }
+
+        // Animación de giro
+        animatorGiro = ObjectAnimator.ofFloat(
+            imgBotella,
+            "rotation",
+            rotacionActual,
+            anguloFinal
+        ).apply {
+            duration = duracionGiroMs
+            interpolator = AccelerateDecelerateInterpolator()
+            doOnEnd {
+                rotacionActual = anguloFinal
+                detenerGiro()
+                iniciarCuentaRegresiva(contador, boton, animacionParpadeo)
+            }
+            start()
+        }
+    }
+
+    private fun detenerGiro() {
+        isGirando = false
+        mediaPlayerGiro?.apply {
+            if (isPlaying) {
+                pause()
+            }
+        }
+    }
+
+    private fun iniciarCuentaRegresiva(
+        contador: TextView,
+        boton: Button,
+        animacionParpadeo: Animation
+    ) {
+        // Mostrar el contador en el centro de la botella (debe estar superpuesto)
+        contador.visibility = View.VISIBLE
+        contador.text = "3"  // Valor inicial
+
+        val duracionCuentaMs = 4000L
+
+        object : CountDownTimer(duracionCuentaMs, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 contador.text = (millisUntilFinished / 1000).toString()
             }
 
             override fun onFinish() {
                 contador.text = "0"
-
-                // Aquí más adelante iniciaremos el juego
+                mostrarDialogoRetoAleatorio(boton, animacionParpadeo, contador) {
+                }
             }
-
         }.start()
     }
+
+    private fun abrirGooglePlay() {
+        val intent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("https://play.google.com/store/apps/details?id=com.nequi.MobileApp")
+        )
+        startActivity(intent)
+    }
+
+    private fun compartirAplicacion() {
+        val mensaje = """
+        App PicoBotella.
+        Solo los valientes lo juegan!!
+        https://play.google.com/store/apps/details?id=com.nequi.MobileApp
+    """.trimIndent()
+
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, mensaje)
+        }
+        startActivity(Intent.createChooser(intent, "Compartir con"))
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
 
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        mediaPlayer = null
-    }
+        mediaPlayerFondo?.stop()
+        mediaPlayerFondo?.release()
+        mediaPlayerFondo = null
 
+        mediaPlayerGiro?.stop()
+        mediaPlayerGiro?.release()
+        mediaPlayerGiro = null
+
+        animatorGiro?.cancel()
+        animatorGiro = null
+    }
 }

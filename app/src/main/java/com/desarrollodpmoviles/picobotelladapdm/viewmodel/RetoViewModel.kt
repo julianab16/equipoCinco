@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.desarrollodpmoviles.picobotelladapdm.model.Reto
 import com.desarrollodpmoviles.picobotelladapdm.repository.RetoRepository
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class RetoViewModel (application: Application) : AndroidViewModel(application) {
     val context = getApplication<Application>()
@@ -66,6 +68,17 @@ class RetoViewModel (application: Application) : AndroidViewModel(application) {
                 _progresState.value = false
             } catch (e: Exception) {
                 _progresState.value = false
+            }
+        }
+    }
+
+    suspend fun obtenerRetoAleatorio(): String? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val reto = retoRepository.getRandomReto()
+                reto?.descripcion
+            } catch (e: Exception) {
+                null
             }
         }
     }
