@@ -9,13 +9,21 @@ import com.desarrollodpmoviles.picobotelladapdm.utils.Constants.NAME_BD
 @Database(entities = [Reto::class], version = 1, exportSchema = false)
 abstract class RetoDB : RoomDatabase() {
     abstract fun retoDao(): RetoDAO
-    companion object{
+
+    companion object {
+        @Volatile
+        private var INSTANCE: RetoDB? = null
+
         fun getDatabase(context: Context): RetoDB {
-            return Room.databaseBuilder(
-                context.applicationContext,
-                RetoDB::class.java,
-                NAME_BD
-            ).build()
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    RetoDB::class.java,
+                    NAME_BD
+                ).build()
+                INSTANCE = instance
+                instance
+            }
         }
     }
 }

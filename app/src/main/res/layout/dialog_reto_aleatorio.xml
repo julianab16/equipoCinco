@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent">   <!-- ← AÑADE ESTO -->
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_contenedor"
+            android:layout_width="375dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:background="@drawable/bg_dialogo_personalizado"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/txtReto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="70dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="60dp"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/cl_contenedor"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/cl_contenedor" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <FrameLayout
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle_border_white"
+            app:layout_constraintBottom_toTopOf="@+id/cl_contenedor"
+            app:layout_constraintEnd_toEndOf="@+id/cl_contenedor"
+            app:layout_constraintStart_toStartOf="@+id/cl_contenedor"
+            app:layout_constraintTop_toTopOf="@+id/cl_contenedor">
+
+            <ImageView
+                android:id="@+id/imgPokemon"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:layout_gravity="center"
+                android:padding="2dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_pokeball"
+                tools:ignore="ContentDescription" />
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/btnCerrar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#FF6800"
+            android:text="Cerrar"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="25sp"
+            app:cornerRadius="9dp"
+            app:layout_constraintBottom_toBottomOf="@id/cl_contenedor"
+            app:layout_constraintEnd_toEndOf="@id/cl_contenedor"
+            app:layout_constraintStart_toStartOf="@id/cl_contenedor"
+            app:layout_constraintTop_toBottomOf="@id/cl_contenedor" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

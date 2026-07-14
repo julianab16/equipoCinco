@@ -84,4 +84,12 @@ dependencies {
     implementation ("androidx.room:room-runtime:2.5.2")
     implementation ("androidx.room:room-ktx:2.5.2")
     ksp("androidx.room:room-compiler:2.5.2")
+
+    // Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Glide para imágenes
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    ksp ("com.github.bumptech.glide:compiler:4.15.1")
 }
