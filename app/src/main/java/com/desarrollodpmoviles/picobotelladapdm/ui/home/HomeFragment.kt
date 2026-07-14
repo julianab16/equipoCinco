@@ -96,10 +96,9 @@ class HomeFragment : Fragment() {
             boton.visibility = View.INVISIBLE
             boton.isEnabled = false
 
-            contador.visibility = View.VISIBLE
+            contador.visibility = View.INVISIBLE  // Oculto MIENTRAS gira
 
-            // Iniciar el giro con el contador
-            iniciarGiroYContador(contador, boton, animacionParpadeo)
+            iniciarGiro(contador, boton, animacionParpadeo)
         }
 
         btnCalificar.setOnClickListener {
@@ -116,8 +115,7 @@ class HomeFragment : Fragment() {
     }
 
 
-
-    private fun iniciarGiroYContador(contador: TextView, boton: Button, animacionParpadeo: android.view.animation.Animation) {
+    private fun iniciarGiro(contador: TextView, boton: Button, animacionParpadeo: android.view.animation.Animation) {
 
         mediaPlayerFondo?.stop()
 
@@ -127,7 +125,7 @@ class HomeFragment : Fragment() {
         val offsetAleatorio = Random.nextInt(0, 360)
         val anguloFinal = rotacionActual + vueltasMinimas + offsetAleatorio
 
-        val duracionMs = 4000L
+        val duracionGiroMs = 4000L
 
         mediaPlayerGiro?.apply {
             if (!isPlaying) {
@@ -142,15 +140,24 @@ class HomeFragment : Fragment() {
             rotacionActual,
             anguloFinal
         ).apply {
-            duration = duracionMs
+            duration = duracionGiroMs
             interpolator = android.view.animation.AccelerateDecelerateInterpolator()
             doOnEnd {
+                // Criterio 5 HU 11: la botella ya se detuvo -> AHORA arranca la cuenta regresiva
                 detenerGiro()
+                iniciarCuentaRegresiva(contador, boton, animacionParpadeo)
             }
             start()
         }
+    }
 
-        object : CountDownTimer(duracionMs, 1000) {
+    private fun iniciarCuentaRegresiva(contador: TextView, boton: Button, animacionParpadeo: android.view.animation.Animation) {
+
+        contador.visibility = View.VISIBLE
+
+        val duracionCuentaMs = 4000L // 3, 2, 1, 0 (4 segundos = 4 valores)
+
+        object : CountDownTimer(duracionCuentaMs, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 contador.text = (millisUntilFinished / 1000).toString()
             }
@@ -158,15 +165,11 @@ class HomeFragment : Fragment() {
             override fun onFinish() {
                 contador.text = "0"
 
-                detenerGiro()
+                // TODO (HU 12, pendiente): mostrar el diálogo con el reto y el pokémon aleatorio
 
                 boton.visibility = View.VISIBLE
                 boton.isEnabled = true
-                boton.startAnimation(animacionParpadeo)  // si tienes la animación en una variable
-
-
-                // Aquí puedes agregar la lógica de "a qué apuntó la botella" si quieres
-                // Por ahora solo se detiene.
+                boton.startAnimation(animacionParpadeo)
             }
         }.start()
     }
