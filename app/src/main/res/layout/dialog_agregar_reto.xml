@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.desarrollodpmoviles.picobotelladapdm.viewmodel.RetoViewModel"/>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/txtTituloAgregar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Agregar reto"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <EditText
+            android:id="@+id/etReto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:hint="Escriba el reto"
+            android:backgroundTint="#FF9800"
+            app:layout_constraintTop_toBottomOf="@id/txtTituloAgregar"/>
+
+        <Button
+            android:id="@+id/btnCancelarAgregar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Cancelar"
+            android:textAllCaps="false"
+            android:backgroundTint="#FF9800"
+            android:textColor="@color/white"
+            app:layout_constraintTop_toBottomOf="@id/etReto"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnGuardarAgregar"/>
+
+        <Button
+            android:id="@+id/btnGuardarAgregar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Guardar"
+            android:textAllCaps="false"
+            android:enabled="false"
+            android:backgroundTint="#BDBDBD"
+            android:textColor="@color/white"
+            app:layout_constraintTop_toBottomOf="@id/etReto"
+            app:layout_constraintStart_toEndOf="@id/btnCancelarAgregar"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

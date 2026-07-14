@@ -9,14 +9,12 @@
 
     <ImageView
         android:id="@+id/imgBotella"
-        android:layout_width="176dp"
-        android:layout_height="337dp"
-        android:layout_marginTop="32dp"
+        android:layout_width="160dp"
+        android:layout_height="300dp"
         android:contentDescription="Botella"
-        android:src="@drawable/ic_botella"
-        app:layout_constraintBottom_toTopOf="@id/txtTitulo"
+        android:src="@drawable/ic_botella_splash"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,10 +22,9 @@
         android:id="@+id/txtTitulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="104dp"
         android:text="Pico Botella"
         android:textColor="#FF9800"
-        android:textSize="28sp"
+        android:textSize="32sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
